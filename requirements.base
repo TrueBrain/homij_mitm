@@ -1,0 +1,4 @@
+aiohttp
+click
+influxdb-client
+paho-mqtt
