@@ -1,0 +1,22 @@
+name: Testing
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  flake8:
+    name: Flake8
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: TrueBrain/actions-flake8@master
+
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build
+      run: docker build .
