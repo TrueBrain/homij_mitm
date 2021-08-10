@@ -5,6 +5,7 @@ import logging
 import ssl
 
 from aiohttp import web
+from aiohttp.web_log import AccessLogger
 from homij_mitm import web_routes
 
 log = logging.getLogger(__name__)
@@ -13,6 +14,13 @@ log = logging.getLogger(__name__)
 def convert_measurements(path, data):
     mod = importlib.import_module(f"homij_mitm.converters.{path}")
     return mod.convert_measurement(data)
+
+
+class ErrorOnlyAccessLogger(AccessLogger):
+    def log(self, request, response, time):
+        # Only log if the status was not successful
+        if not (200 <= response.status < 400):
+            super().log(request, response, time)
 
 
 class HomijForwarder:
@@ -109,4 +117,4 @@ class HomijForwarder:
 
         app = web.Application()
         app.add_routes(web_routes.routes)
-        web.run_app(app, ssl_context=ssl_context, port=port)
+        web.run_app(app, ssl_context=ssl_context, port=port, access_log_class=ErrorOnlyAccessLogger)
