@@ -49,6 +49,11 @@ class HomijForwarder:
             return
 
         if len(payload["content"]["c"]) != 1 or len(payload["content"]["c"][0]["write"]["rows"]) != 1:
+            # When a measurement fails, there are two rows, of which the second
+            # is on the error channel. We simply ignore these entries.
+            if len(payload["content"]["c"][0]["write"]["rows"]) == 2 and len(payload["content"]["c"][0]["write"]["rows"][1]["channels"]) == 1 and payload["content"]["c"][0]["write"]["rows"][1]["channels"][0]["channel"] == "Error":
+                return
+
             log.error("Unexpected payload: %r", payload)
             return
 
