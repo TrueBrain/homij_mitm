@@ -2,9 +2,6 @@ import asyncio
 import click
 import gzip
 import logging
-import time
-
-from influxdb_client import WriteOptions
 
 from homij_mitm.homij_forwarder import HomijForwarder
 from homij_mitm.influxdb import InfluxDBClient
