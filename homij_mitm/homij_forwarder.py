@@ -36,7 +36,11 @@ class HomijForwarder:
             return
 
         # For some reason, their custom JSON encoder adds one } too many
-        payload = json.loads(data[:-1])
+        try:
+            payload = json.loads(data[:-1])
+        except json.decoder.JSONDecodeError:
+            log.error("Couldn't decode JSON: %r", data[:-1])
+            return
 
         # As these raspberries create an ad-hoc WiFi between all of them, it can
         # happen that information from neighbours is being pushed out of our

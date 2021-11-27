@@ -2,7 +2,10 @@ import influxdb_client
 import logging
 import time
 
-from influxdb_client.client.write_api import SYNCHRONOUS
+from influxdb_client.client.write_api import (
+    ASYNCHRONOUS,
+    SYNCHRONOUS,
+)
 from influxdb_client.domain.write_precision import WritePrecision
 
 log = logging.getLogger(__name__)
@@ -23,8 +26,14 @@ class InfluxDBClient:
         if sensor_time is None:
             sensor_time = time.time() * 1000
 
+        points = []
         for field, payload in fields.items():
             tags["unit"] = payload["unit"]
 
-            p = influxdb_client.Point(field).time(int(sensor_time), WritePrecision.MS).field("value", payload["value"])
-            self._write_api.write(bucket=self._bucket, record=p)
+            points.append(influxdb_client.Point(field).time(int(sensor_time), WritePrecision.MS).field("value", payload["value"]))
+
+        self._write_api.write(bucket=self._bucket, record=points)
+
+    def batch(self):
+        self._write_api = self._client.write_api(write_options=influxdb_client.WriteOptions())
+        return self._write_api
