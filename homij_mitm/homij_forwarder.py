@@ -110,11 +110,12 @@ class HomijForwarder:
         current_time = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         self.log_fp = open(f"{self.log_filename}.{current_time}", "a")
 
-    def __init__(self, basen_id, send_measurement, log_filename):
+    def __init__(self, basen_id, send_measurement, log_filename, dont_forward):
         web_routes.set_homij_forwarder(self)
 
         self.basen_id = basen_id
         self.send_measurement = send_measurement
+        self.dont_forward = dont_forward
 
         if log_filename:
             self.log_filename = log_filename

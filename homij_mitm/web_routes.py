@@ -33,12 +33,17 @@ async def data_handler(request):
     if authorization:
         headers["Authorization"] = authorization
 
-    # Create the call to the real webserver.
-    async with aiohttp.ClientSession() as session:
-        async with session.post(f"https://{host}/_ua/{identifier}/", data=data, headers=headers) as resp:
-            content_type = resp.headers.get("CONTENT-TYPE").split(";")[0]
-            status = resp.status
-            body = await resp.read()
+    if HOMIJ_FORWARDER.dont_forward:
+        content_type = "application/json"
+        status = 200
+        body = b'[{"duration":0,"data":"Wrote 1 rows","error":0,"info":"Wrote 1 rows"}]'
+    else:
+        # Create the call to the real webserver.
+        async with aiohttp.ClientSession() as session:
+            async with session.post(f"https://{host}/_ua/{identifier}/", data=data, headers=headers) as resp:
+                content_type = resp.headers.get("CONTENT-TYPE").split(";")[0]
+                status = resp.status
+                body = await resp.read()
 
     # Respond with what-ever the real webserver was saying.
     # We do not pass along any headers, except content-type.

@@ -26,7 +26,8 @@ CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
 @click.option("--influxdb-org", help="Organisation of the InfluxDB server", required=True)
 @click.option("--influxdb-bucket", help="Bucket to use in the InfluxDB server", default="metrics", show_default=True)
 @click.option("--port", help="Port of the server", default=443, show_default=True)
-def main(cert_file, key_file, log_folder, basen_id, influxdb_url, influxdb_token, influxdb_org, influxdb_bucket, port):
+@click.option("--dont-forward", help="Don't actually forward the request and always return a 200", is_flag=True, default=False, show_default=True)
+def main(cert_file, key_file, log_folder, basen_id, influxdb_url, influxdb_token, influxdb_org, influxdb_bucket, port, dont_forward):
     logging.basicConfig(
         format="%(asctime)s %(levelname)-8s %(message)s", datefmt="%Y-%m-%d %H:%M:%S", level=logging.INFO
     )
@@ -36,7 +37,7 @@ def main(cert_file, key_file, log_folder, basen_id, influxdb_url, influxdb_token
 
     log_filename = f"{log_folder}/logging.txt" if log_folder else None
     homij_forwarder = HomijForwarder(
-        basen_id=basen_id, send_measurement=influxdb_client.send_measurement, log_filename=log_filename
+        basen_id=basen_id, send_measurement=influxdb_client.send_measurement, log_filename=log_filename, dont_forward=dont_forward
     )
     homij_forwarder.run(port=port, cert_file=cert_file, key_file=key_file)
 
