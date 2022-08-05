@@ -21,7 +21,7 @@ class InfluxDBClient:
 
     def send_measurement(self, sensor, fields, tags, sensor_time=None):
         if sensor_time is None:
-            sensor_time = int(time.time() * 1000)
+            sensor_time = time.time() * 1000
 
         points = []
         for field, payload in fields.items():
@@ -31,7 +31,7 @@ class InfluxDBClient:
             point = {
                 "measurement": field,
                 "tags": tags,
-                "time": sensor_time,
+                "time": int(sensor_time),
                 "fields": {
                     "value": payload["value"],
                 },
