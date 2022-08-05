@@ -54,8 +54,8 @@ jobs:
       id: publish
       uses: openttd/actions/docker-publish@v2
       with:
-        registry-username: ${{ secrets.GHCR_USERNAME }}
-        registry-password: ${{ secrets.GHCR_PASSWORD }}
+        registry-username: ${{ github.actor }}
+        registry-password: ${{ secrets.GITHUB_TOKEN }}
         registry: ghcr.io
         name: ${{ steps.vars.outputs.name }}
         tag: ${{ steps.vars.outputs.tag }}
