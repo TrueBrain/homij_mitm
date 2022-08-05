@@ -21,15 +21,23 @@ class InfluxDBClient:
 
     def send_measurement(self, sensor, fields, tags, sensor_time=None):
         if sensor_time is None:
-            sensor_time = time.time() * 1000
+            sensor_time = int(time.time() * 1000)
 
         points = []
         for field, payload in fields.items():
             tags["unit"] = payload["unit"]
+            tags["sensor"] = sensor
 
-            points.append(
-                influxdb_client.Point(field).time(int(sensor_time), WritePrecision.MS).field("value", payload["value"])
-            )
+            point = {
+                "measurement": field,
+                "tags": tags,
+                "time": sensor_time,
+                "fields": {
+                    "value": payload["value"],
+                },
+            }
+
+            points.append(influxdb_client.Point.from_dict(point, WritePrecision.MS))
 
         self._write_api.write(bucket=self._bucket, record=points)
 
